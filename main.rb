@@ -42,6 +42,13 @@ class Guessing
 			vector[q] = bool
 			qs_filtered = filter(qs_filtered,q,bool)
 			puts qs_filtered
+			if done(qs_filtered)
+				if not guess(qs_filtered)
+					learn(vector)
+				end
+				exit # to do - keep going 
+				start_fresh
+			end
 		end
 	end
 
@@ -58,12 +65,41 @@ class Guessing
 	end
 
 	def filter(qs_filtered,q,bool) # reduce remaining questions, animals
-		candidates = qs_filtered[q]
-		qs_filtered.each do |q,animals|
-			qs_filtered[q] = animals.select {|k,v| v === bool }
+		candidates = qs_filtered[q].select {|k,v| v === bool }
+		print "candidates: "
+		puts candidates
+		qs_filtered.each do |q_i,animals_i|
+			qs_filtered[q_i] = animals_i.select {|k_i,v_i| candidates.key?(k_i) }
 		end
 		qs_filtered.delete(q)
 		return qs_filtered
+	end
+
+	def done(qs_filtered)
+		if qs_filtered.empty? or qs_filtered.values[0].count < 2
+			puts "We're done!"
+			return true
+		end
+		return false
+	end
+
+	def guess(qs_filtered)
+		if qs_filtered.empty? or qs_filtered.values[0].empty?
+			return false
+		end
+		print "Is it a "
+		puts qs_filtered.values[0].keys[0].to_s + "?"
+		input = get_input
+		return input === 'y'
+	end
+
+	def learn(vector)
+		print "Gosh. I'm stumped. Please tell me what this creature is: "
+		animal_name = gets.downcase.chomp!
+	end
+
+	def start_fresh()
+		puts "Starting Over ... "
 	end
 end
 
