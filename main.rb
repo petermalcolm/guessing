@@ -17,10 +17,6 @@ class Guessing
 			:"Does it fit in a shoebox?"      => { :"mouse" => true,  :"cat" => false, :"trout" => true },
 		}
 		qs_filtered = qs_clone(@qs)
-		puts @qs
-		puts '- - -'
-		puts qs_filtered
-		puts '- - -'
 		main_loop(qs_filtered)
 	end
 
@@ -37,14 +33,19 @@ class Guessing
 	end
 
 	def main_loop(qs_filtered) # repl
+		vector = Hash.new
 		loop do
 			q = qs_filtered.keys.sample
 			print q
 			input = get_input
+			bool = input === 'y'
+			vector[q] = bool
+			qs_filtered = filter(qs_filtered,q,bool)
+			puts qs_filtered
 		end
 	end
 
-	def get_input
+	def get_input # from user
 		input = ''
 		while input != 'y' and input != 'n'
 			print " y / n : "
@@ -54,6 +55,15 @@ class Guessing
 			end
 		end 
 		return input
+	end
+
+	def filter(qs_filtered,q,bool) # reduce remaining questions, animals
+		candidates = qs_filtered[q]
+		qs_filtered.each do |q,animals|
+			qs_filtered[q] = animals.select {|k,v| v === bool }
+		end
+		qs_filtered.delete(q)
+		return qs_filtered
 	end
 end
 
