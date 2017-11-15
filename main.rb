@@ -71,7 +71,9 @@ class Guessing
 		qs_filtered.each do |q_i,animals_i|
 			qs_filtered[q_i] = animals_i.select {|k_i,v_i| candidates.key?(k_i) }
 		end
-		qs_filtered.delete(q)
+		unless qs_filtered.values[0].count === 1
+			qs_filtered.delete(q)
+		end
 		return qs_filtered
 	end
 
