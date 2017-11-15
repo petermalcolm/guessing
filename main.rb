@@ -111,8 +111,13 @@ class Guessing
 	def learn(vector,qs_filtered)
 		print "Gosh. I'm stumped. Please tell me what this creature is: "
 		animal_name = gets.downcase.chomp!
-		vector.each do |q,bool|
-			@qs[q][animal_name.to_sym] = bool # Apply answers to new animal
+		@qs.each do |q,hash|
+			if vector.keys.include?(q)
+				@qs[q][animal_name.to_sym] = vector[q] # Apply answers to new animal
+			else
+				print "Regarding a " + animal_name + ": " + q.to_s # Or just ask
+				@qs[q][animal_name.to_sym] = get_input === 'y'
+			end
 		end
 		unless bottomed_out?(qs_filtered)
 			puts "For next time, please provide a yes or no question that can help me "
