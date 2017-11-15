@@ -44,7 +44,7 @@ class Guessing
 			puts qs_filtered
 			if done(qs_filtered)
 				if not guess(qs_filtered)
-					learn(vector)
+					learn(vector,qs_filtered)
 				end
 				exit # to do - keep going 
 				start_fresh
@@ -86,18 +86,42 @@ class Guessing
 	end
 
 	def guess(qs_filtered)
-		if qs_filtered.empty? or qs_filtered.values[0].empty?
+		if bottomed_out?(qs_filtered)
 			return false
 		end
 		print "Is it a "
-		puts qs_filtered.values[0].keys[0].to_s + "?"
+		puts animal_guess(qs_filtered) + "?"
 		input = get_input
 		return input === 'y'
 	end
 
-	def learn(vector)
+	def bottomed_out?(qs_filtered)
+		qs_filtered.empty? or qs_filtered.values[0].empty?
+	end
+
+	def animal_guess(qs_filtered)
+		qs_filtered.values[0].keys[0].to_s
+	end
+
+	def learn(vector,qs_filtered)
 		print "Gosh. I'm stumped. Please tell me what this creature is: "
 		animal_name = gets.downcase.chomp!
+		vector.each do |q,bool|
+			@qs[q][animal_name.to_sym] = bool # Apply answers to new animal
+		end
+		unless bottomed_out?(qs_filtered)
+			puts "For next time, please provide a yes or no question that can help me "
+			puts "distinguish between a " + animal_guess(qs_filtered) + " and a " + animal_name
+			print " : "
+			new_q = gets.chomp!
+			new_q_row = Hash.new
+			@qs.values[0].keys.each do |a_i,bool_i|
+				print "Regarding a " + a_i.to_s + ": " + new_q
+				new_q_row[a_i] = get_input === 'y'
+			end
+			@qs[new_q.to_sym] = new_q_row
+			puts @qs
+		end
 	end
 
 	def start_fresh()
