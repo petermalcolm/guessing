@@ -32,8 +32,13 @@ class Guessing
 		return _clone
 	end
 
+	def intro_text
+		puts "Think of an animal. I will ask questions and try to guess what the animal is."
+	end
+
 	def main_loop(qs_filtered) # repl
 		vector = Hash.new
+		intro_text
 		loop do
 			q = qs_filtered.keys.sample
 			print q
