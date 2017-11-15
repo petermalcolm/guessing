@@ -50,7 +50,6 @@ class Guessing
 			bool = input === 'y'
 			@vector[q] = bool
 			qs_filtered = filter(qs_filtered,q,bool)
-			puts qs_filtered
 			if done(qs_filtered)
 				if not guess(qs_filtered)
 					learn(qs_filtered)
@@ -74,8 +73,6 @@ class Guessing
 
 	def filter(qs_filtered,q,bool) # reduce remaining questions, animals
 		candidates = qs_filtered[q].select {|k,v| v === bool }
-		print "candidates: "
-		puts candidates
 		qs_filtered.each do |q_i,animals_i|
 			qs_filtered[q_i] = animals_i.select {|k_i,v_i| candidates.key?(k_i) }
 		end
@@ -133,7 +130,6 @@ class Guessing
 				new_q_row[a_i] = get_input === 'y'
 			end
 			@qs[new_q.to_sym] = new_q_row
-			puts @qs
 		end
 	end
 
