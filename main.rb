@@ -16,8 +16,14 @@ class Guessing
 			:"Does it prey on other animals?" => { :"mouse" => false, :"cat" => true,  :"trout" => false},
 			:"Does it fit in a shoebox?"      => { :"mouse" => true,  :"cat" => false, :"trout" => true },
 		}
+		@vector = Hash.new
+		intro_text
+		main_loop(reset_filtered)
+	end
+
+	def reset_filtered
 		qs_filtered = qs_clone(@qs)
-		main_loop(qs_filtered)
+		return qs_filtered
 	end
 
 	def qs_clone(qs) # deep clone
@@ -37,22 +43,19 @@ class Guessing
 	end
 
 	def main_loop(qs_filtered) # repl
-		vector = Hash.new
-		intro_text
 		loop do
 			q = qs_filtered.keys.sample
 			print q
 			input = get_input
 			bool = input === 'y'
-			vector[q] = bool
+			@vector[q] = bool
 			qs_filtered = filter(qs_filtered,q,bool)
 			puts qs_filtered
 			if done(qs_filtered)
 				if not guess(qs_filtered)
-					learn(vector,qs_filtered)
+					learn(qs_filtered)
 				end
-				exit # to do - keep going 
-				start_fresh
+				qs_filtered = start_fresh_filtered
 			end
 		end
 	end
@@ -108,12 +111,12 @@ class Guessing
 		qs_filtered.values[0].keys[0].to_s
 	end
 
-	def learn(vector,qs_filtered)
+	def learn(qs_filtered)
 		print "Gosh. I'm stumped. Please tell me what this creature is: "
 		animal_name = gets.downcase.chomp!
 		@qs.each do |q,hash|
-			if vector.keys.include?(q)
-				@qs[q][animal_name.to_sym] = vector[q] # Apply answers to new animal
+			if @vector.keys.include?(q)
+				@qs[q][animal_name.to_sym] = @vector[q] # Apply answers to new animal
 			else
 				print "Regarding a " + animal_name + ": " + q.to_s # Or just ask
 				@qs[q][animal_name.to_sym] = get_input === 'y'
@@ -134,8 +137,14 @@ class Guessing
 		end
 	end
 
-	def start_fresh()
-		puts "Starting Over ... "
+	def start_fresh_filtered()
+		puts "Would you like to play again?"
+		if get_input === 'n'
+			exit
+		end
+		intro_text
+		@vector = Hash.new
+		return reset_filtered
 	end
 end
 
